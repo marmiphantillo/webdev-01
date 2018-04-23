@@ -1,4 +1,4 @@
 var dns = require('dns');
-dns.resolve('klangboahrd.de', 'TXT', function(err, addresses) {
+dns.resolve('www.klangboahrd.de', 'TXT', function(err, addresses) {
     console.log(err, addresses);
 });
