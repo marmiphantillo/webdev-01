@@ -4,13 +4,17 @@ const fs = require('fs');
 const HOST = '127.0.0.1';
 const PORT = 80;
 
-let regex = /(GET)|(POST)|([\/]?\S+)/gm;
+let req_regex = /(GET)|(POST)|([\/]?\S+)/gm;
+let post_regex = /(counter=)|([0-9]\d+)/gm;
 
 var server = net.createServer(function(socket) {
-  socket.once('data', (data) => {
-    socket.write(dataHandler(data), () => {
+  socket.on('data', (data) => {
+    let req = dataHandler(data);
+    console.log(req);
+
+    socket.write(reqHandler(req.method, req.url), () => {
       socket.end();
-    })
+    });
   });
 
   socket.on('error', function(err) {
@@ -23,18 +27,25 @@ server.listen(PORT, HOST, function () {
 });
 
 function dataHandler(data) {
-  let matches = (data.toString()).match(regex);
-  let method = matches[0];
-  let url = matches[1];
+  let matches = (data.toString()).match(req_regex);
+  return {"method":matches[0], "url":matches[1]};
+}
 
+function reqHandler(method, url) {
   if (method === "GET") {
-    if (url === "/") {
-      return buildHTML('visitor count: ' + getCounter());
-    } else if (url === "/visit") {
-      updateCounter();
-      return buildHTML('new visitor count: ' + getCounter());
+    if (url === "/") { return buildHTML('visitor count: ' + getCounter()); } 
+    if (url === "/visit") { updateCounter(); return buildHTML('new visitor count: ' + getCounter()); }  
+    if (url !== "/" || url !== "/visit") { return buildHTML(404); }
+  } 
+  
+  if (method === "POST") {
+    let matches = url.match(post_regex);
+    if(matches[0] === "counter=" && !isNaN(matches[1]) && typeof matches[1] !== "undefined") {
+      setCounter(parseInt(matches[1]));
+      return buildHTML("POST REQUEST: VALUE SET.");
     } else {
-      return buildHTML(404);
+      console.log("No valid counter value");
+      return buildHTML("FAILED POST REQUEST");
     }
   }
 }
@@ -51,5 +62,10 @@ function getCounter() {
 function updateCounter() {
   let newCounter = getCounter() + 1;
   let obj = {"counter":newCounter};
+  fs.writeFileSync('./tcp_server.json', JSON.stringify(obj, null, 2), 'utf-8');
+}
+
+function setCounter(val) {
+  let obj = {"counter":val};
   fs.writeFileSync('./tcp_server.json', JSON.stringify(obj, null, 2), 'utf-8');
 }
