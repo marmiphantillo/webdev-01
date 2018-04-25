@@ -1,0 +1,25 @@
+{
+  "name": "webdev-01",
+  "version": "3.0.0",
+  "description": "Use the \"calculator.js\" file to calculate simple formulas.",
+  "main": "tcp_server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node tcp_server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartsonb/webdev-01.git"
+  },
+  "author": "Armin Bartnik <armin.bartnik@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bartsonb/webdev-01/issues"
+  },
+  "homepage": "https://github.com/bartsonb/webdev-01#readme",
+  "dependencies": {
+    "colors": "^1.2.1"
+  }
+}
