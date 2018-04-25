@@ -6,15 +6,9 @@ const PORT = 80;
 
 let regex = /(GET)|(POST)|([\/]?\S+)/gm;
 
-console.log(getCounter());
-
 var server = net.createServer(function(socket) {
-  let client = socket.remoteAddress + ":" + socket.remotePort;
-  console.log(`Client "${client} connected.`);
-
-  socket.on('data', (data) => {
+  socket.once('data', (data) => {
     socket.write(dataHandler(data), () => {
-      console.log('Client disconnected.');
       socket.end();
     })
   });
@@ -28,17 +22,17 @@ server.listen(PORT, HOST, function () {
   console.log(`Server running on localhost:${PORT}.`);
 });
 
-function dataHandler(data, option) {
+function dataHandler(data) {
   let matches = (data.toString()).match(regex);
   let method = matches[0];
   let url = matches[1];
 
   if (method === "GET") {
     if (url === "/") {
-      return buildHTML(`visitor count: ${count}`);
+      return buildHTML('visitor count: ' + getCounter());
     } else if (url === "/visit") {
-      count++;
-      return buildHTML(`new visitor count: ${count}`);
+      updateCounter();
+      return buildHTML('new visitor count: ' + getCounter());
     } else {
       return buildHTML(404);
     }
@@ -50,20 +44,12 @@ function buildHTML(msg) {
 }
 
 function getCounter() {
-  var obj;
-  fs.readFileSync('./tcp_server.json', 'utf8', function (err, data) {
-    if (err) throw err;
-    console.log(obj);
-    return obj = JSON.parse(data);
-  });
+  let obj = JSON.parse(fs.readFileSync('./tcp_server.json', 'utf8'));
+  return obj.counter;
 }
 
 function updateCounter() {
-  fs.writeFile(json_file, JSON.stringify(getCounter(), null, 2), (err) => {
-    if(err) {
-      console.log(err);
-    } else {
-      console.log('tcp_server.json updated.');
-    }
-  })
+  let newCounter = getCounter() + 1;
+  let obj = {"counter":newCounter};
+  fs.writeFileSync('./tcp_server.json', JSON.stringify(obj, null, 2), 'utf-8');
 }
