@@ -20,6 +20,5 @@
   },
   "homepage": "https://github.com/bartsonb/webdev-01#readme",
   "dependencies": {
-    "colors": "^1.2.1"
   }
 }
