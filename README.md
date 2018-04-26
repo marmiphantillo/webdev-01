@@ -17,6 +17,6 @@ Start the tcp server with the "tcp_server.js" file using one of the two commands
 **localhost:80** - viewing visitor count (GET) </br>
 **localhost:80/visit** - incrementing visitor count (GET)</br>
 
-**localhost:80/?counter=\<number\>** - setting the visitor count to a specific value (POST)
+**localhost:80/?counter=\<number\>** - setting the visitor count to a specific value (POST - using Postman)
 
 *(The visitor count is stored in the "tcp_server.json" file)*
